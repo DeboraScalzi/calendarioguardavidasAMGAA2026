@@ -1,0 +1,353 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans, sans-serif); }
+  .header { padding: 1rem 1rem 0.5rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+  .subtitle { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .nav { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .nav-btn { background: none; border: 0.5px solid var(--color-border-secondary); border-radius: 6px; padding: 4px 10px; font-size: 13px; cursor: pointer; color: var(--color-text-primary); transition: background 0.15s; }
+  .nav-btn:hover { background: var(--color-background-secondary); }
+  .nav-btn.active { background: var(--color-background-info); border-color: var(--color-border-info); color: var(--color-text-info); font-weight: 500; }
+  .month-nav { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .month-label { font-size: 14px; font-weight: 500; min-width: 130px; text-align: center; color: var(--color-text-primary); }
+  .filters { padding: 8px 1rem; display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .chip { padding: 3px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; border: 0.5px solid transparent; transition: all 0.15s; font-weight: 500; }
+  .chip.active { opacity: 1; }
+  .chip.inactive { opacity: 0.4; }
+  .calendar-grid { padding: 0.75rem 1rem; }
+  .day-headers { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+  .day-header { text-align: center; font-size: 11px; color: var(--color-text-secondary); font-weight: 500; padding: 2px; }
+  .day-header.weekend { color: #c0392b; }
+  .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .day-cell { min-height: 58px; border: 0.5px solid var(--color-border-tertiary); border-radius: 6px; padding: 4px; background: var(--color-background-primary); cursor: pointer; transition: background 0.12s; }
+  .day-cell:hover { background: var(--color-background-secondary); }
+  .day-cell.empty { background: none; border-color: transparent; cursor: default; }
+  .day-cell.today { border-color: var(--color-border-info); }
+  .day-cell.weekend-cell { background: #f0f0ee; }
+  .day-cell.weekend-cell:hover { background: #e4e4e0; }
+  .day-num { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 2px; }
+  .day-num.weekend-num { color: #c0392b; }
+  .day-num.holiday-num { color: #c0392b; font-weight: 700; }
+  .day-cell.today .day-num { color: var(--color-text-info); }
+  .holiday-label { font-size: 8px; color: #888; line-height: 1.2; margin-bottom: 2px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .events { display: flex; flex-direction: column; gap: 1px; }
+  .event-dot { font-size: 9px; border-radius: 3px; padding: 1px 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; font-weight: 500; }
+  .legend { padding: 0.5rem 1rem 0.75rem; display: flex; flex-wrap: wrap; gap: 6px; border-top: 0.5px solid var(--color-border-tertiary); }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--color-text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; }
+  .modal.open { display: flex; }
+  .modal-box { background: var(--color-background-primary); border-radius: 12px; padding: 1.25rem; max-width: 340px; width: 90%; border: 0.5px solid var(--color-border-secondary); }
+  .modal-title { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .modal-close { float: right; cursor: pointer; font-size: 18px; color: var(--color-text-secondary); background: none; border: none; }
+  .modal-event { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
+  .modal-event:last-child { border-bottom: none; }
+  .modal-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .modal-holiday { font-size: 12px; color: #c0392b; margin-bottom: 8px; font-weight: 500; }
+</style>
+
+<div class="header">
+  <div class="title">Carrera de Guardavidas 2026 — Campo Deportivo Dante Alighieri</div>
+  <div class="subtitle">Inicio ciclo lectivo: 16/03/2026 · Psicología, Legales y Prehospitalaria son virtuales (examen presencial)</div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="setView('month', this)">Mes</button>
+    <button class="nav-btn" onclick="setView('list', this)">Lista</button>
+    <div class="month-nav">
+      <button class="nav-btn" onclick="prevMonth()">&#8592;</button>
+      <span class="month-label" id="month-label"></span>
+      <button class="nav-btn" onclick="nextMonth()">&#8594;</button>
+    </div>
+  </div>
+</div>
+
+<div class="filters" id="filters"></div>
+<div id="cal-view"></div>
+<div class="legend" id="legend"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const MATERIAS = [
+  { key: 'nat',  label: 'Natación',          bg: '#1565C0', text: '#ffffff' },
+  { key: 'fis',  label: 'Físico',            bg: '#9FE1CB', text: '#085041' },
+  { key: 'psi',  label: 'Psicología',        bg: '#F48FB1', text: '#880E4F' },
+  { key: 'leg',  label: 'Legales',           bg: '#E6C84A', text: '#5a3e00' },
+  { key: 'sal',  label: 'Salvamento',        bg: '#F5C4B3', text: '#712B13' },
+  { key: 'pre',  label: 'Pre Hospitalaria',  bg: '#C0DD97', text: '#27500A' },
+  { key: 'sal2', label: 'Salidas',           bg: '#CECBF6', text: '#26215C' },
+  { key: 'exam', label: 'Exámenes',          bg: '#FFD600', text: '#5a4000' },
+  { key: 'recup',label: 'Recuperatorios',    bg: '#E24B4A', text: '#ffffff' },
+];
+
+// Feriados nacionales 2026 (solo marzo-noviembre) con nombre abreviado
+const FERIADOS = {
+  '2026-03-23': 'Puente turístico',
+  '2026-03-24': 'Día de la Memoria',
+  '2026-04-02': 'Veteranos Malvinas',
+  '2026-04-03': 'Viernes Santo',
+  '2026-05-01': 'Día del Trabajador',
+  '2026-05-25': 'Rev. de Mayo',
+  '2026-06-15': 'Paso a la Inm. Güemes',
+  '2026-06-20': 'Día de la Bandera',
+  '2026-07-09': 'Independencia',
+  '2026-07-10': 'Puente turístico',
+  '2026-08-17': 'Paso a la Inm. San Martín',
+  '2026-10-12': 'Diversidad Cultural',
+  '2026-11-23': 'Soberanía Nacional',
+};
+
+const SCHEDULE = {
+  3:  { nat:[18,25,30], fis:[30], sal:[20,27] },
+  4:  { nat:[1,8,15,20,22,29], fis:[20], psi:[7,9,14,16,21,23,28,30], leg:[7,9,14,16,28,30], sal:[6,10,17,24] },
+  5:  { nat:[6,13,18,20,27], fis:[18], psi:[5,7,12,14,19,21,26,28], leg:[5,7,12,14,19,21], sal:[4,8,15,22,29] },
+  6:  { nat:[3,8,10,17,24], fis:[8], leg:[4,11,18], sal:[5,12,19], pre:[2,9,16,23,25,30] },
+  7:  { nat:[1,22,27,29], fis:[27], leg:[3], sal:[24,31], pre:[2,7,28] },
+  8:  { nat:[5,10,12,19,24,26], fis:[10,24], sal:[7,14,21,28], pre:[4,11,18,25] },
+  9:  { nat:[2,7,9,14,16,23,30], fis:[7,14], sal:[4,18,25], pre:[1,8,15,22,29] },
+  10: { nat:[5,7,14,19,21,28], fis:[5], sal:[2,9,16,23,30], pre:[6,13,20,27] },
+  11: { nat:[2,4,11,16], fis:[2], sal:[13], pre:[3,10] },
+};
+
+const EXAMS_DATA = [
+  { date:'2026-06-24', type:'exam',  label:'1° Examen Natación' },
+  { date:'2026-07-01', type:'exam',  label:'1° Examen Natación' },
+  { date:'2026-05-26', type:'exam',  label:'1° Examen Psicología' },
+  { date:'2026-06-04', type:'exam',  label:'1° Examen Legales' },
+  { date:'2026-06-19', type:'exam',  label:'1° Examen Salvamento' },
+  { date:'2026-07-07', type:'exam',  label:'1° Examen Pre Hosp.' },
+  { date:'2026-07-22', type:'recup', label:'Recup. Natación' },
+  { date:'2026-05-28', type:'recup', label:'Recup. Psicología' },
+  { date:'2026-06-18', type:'recup', label:'Recup. Legales' },
+  { date:'2026-06-26', type:'recup', label:'Recup. Salvamento' },
+  { date:'2026-07-21', type:'recup', label:'Recup. Pre Hosp.' },
+  { date:'2026-10-19', type:'exam',  label:'2° Examen Natación' },
+  { date:'2026-10-21', type:'exam',  label:'2° Examen Natación' },
+  { date:'2026-10-23', type:'exam',  label:'2° Examen Salvamento' },
+  { date:'2026-10-30', type:'exam',  label:'2° Examen Salvamento' },
+  { date:'2026-10-27', type:'exam',  label:'2° Examen Pre Hosp.' },
+  { date:'2026-11-16', type:'recup', label:'Recup. 2 Natación' },
+  { date:'2026-11-13', type:'recup', label:'Recup. 2 Salvamento' },
+  { date:'2026-11-10', type:'recup', label:'Recup. 2 Pre Hosp.' },
+  { date:'2026-09-19', type:'sal2',  label:'Oficial Río' },
+  { date:'2026-09-20', type:'sal2',  label:'Oficial Río' },
+  { date:'2026-10-24', type:'sal2',  label:'Oficial Lago/Dique' },
+  { date:'2026-10-25', type:'sal2',  label:'Oficial Lago/Dique' },
+];
+for (let d = 20; d <= 27; d++) {
+  EXAMS_DATA.push({ date:`2026-11-${String(d).padStart(2,'0')}`, type:'sal2', label:'Costa' });
+}
+
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS_SHORT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+let currentMonth = 2;
+let currentView = 'month';
+let activeFilters = new Set(MATERIAS.map(m => m.key));
+
+const TYPE_STYLE = {
+  exam:  { bg:'#FFD600', text:'#5a4000' },
+  recup: { bg:'#E24B4A', text:'#ffffff' },
+  sal2:  { bg:'#CECBF6', text:'#26215C' },
+};
+
+function buildEvents() {
+  const events = {};
+  Object.entries(SCHEDULE).forEach(([mo, keys]) => {
+    const m = parseInt(mo) - 1;
+    Object.entries(keys).forEach(([key, days]) => {
+      const mat = MATERIAS.find(x => x.key === key);
+      if (!mat) return;
+      days.forEach(d => {
+        const k = `2026-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (!events[k]) events[k] = [];
+        events[k].push({ key, label: mat.label, bg: mat.bg, text: mat.text });
+      });
+    });
+  });
+  EXAMS_DATA.forEach(e => {
+    if (!events[e.date]) events[e.date] = [];
+    const c = TYPE_STYLE[e.type] || { bg:'#ddd', text:'#333' };
+    events[e.date].push({ key: e.type, label: e.label, bg: c.bg, text: c.text });
+  });
+  return events;
+}
+
+const ALL_EVENTS = buildEvents();
+
+function getEventsForDay(dateStr) {
+  return (ALL_EVENTS[dateStr] || []).filter(e => activeFilters.has(e.key));
+}
+
+function renderFilters() {
+  const el = document.getElementById('filters');
+  el.innerHTML = MATERIAS.map(m => `
+    <span class="chip ${activeFilters.has(m.key) ? 'active' : 'inactive'}"
+      style="background:${m.bg};color:${m.text};border-color:${m.bg}"
+      onclick="toggleFilter('${m.key}')">${m.label}</span>
+  `).join('');
+}
+
+function toggleFilter(key) {
+  if (activeFilters.has(key)) activeFilters.delete(key);
+  else activeFilters.add(key);
+  renderFilters();
+  renderView();
+}
+
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderView();
+}
+
+function renderView() {
+  if (currentView === 'month') renderMonth();
+  else renderList();
+}
+
+function renderMonth() {
+  const year = 2026;
+  const month = currentMonth;
+  document.getElementById('month-label').textContent = MONTHS[month] + ' ' + year;
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+
+  // Day headers: Dom y Sáb en rojo
+  const hdrs = DAYS_SHORT.map((d,i) => {
+    const isWe = (i === 0 || i === 6);
+    return `<div class="day-header${isWe?' weekend':''}">${d}</div>`;
+  }).join('');
+
+  let html = `<div class="calendar-grid">
+    <div class="day-headers">${hdrs}</div>
+    <div class="days-grid">`;
+
+  for (let i = 0; i < firstDay; i++) html += `<div class="day-cell empty"></div>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `2026-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow = new Date(2026, month, d).getDay(); // 0=Dom, 6=Sáb
+    const isWeekend = (dow === 0 || dow === 6);
+    const isHoliday = !!FERIADOS[dateStr];
+    const isToday = today.getFullYear()===2026 && today.getMonth()===month && today.getDate()===d;
+    const evs = getEventsForDay(dateStr);
+
+    let cellClass = 'day-cell';
+    if (isWeekend) cellClass += ' weekend-cell';
+    if (isToday) cellClass += ' today';
+
+    let numClass = 'day-num';
+    if (isToday) numClass = 'day-num'; // today overrides via CSS
+    else if (isWeekend || isHoliday) numClass = isHoliday ? 'day-num holiday-num' : 'day-num weekend-num';
+
+    html += `<div class="${cellClass}" onclick="openDay('${dateStr}', ${d})">
+      <div class="${numClass}">${d}</div>`;
+
+    if (isHoliday) {
+      html += `<div class="holiday-label">${FERIADOS[dateStr]}</div>`;
+    }
+
+    html += `<div class="events">`;
+    evs.slice(0,2).forEach(e => {
+      const bold = (e.key==='exam'||e.key==='recup') ? 'font-weight:700;' : '';
+      html += `<div class="event-dot" style="background:${e.bg};color:${e.text};${bold}">${e.label}</div>`;
+    });
+    if (evs.length > 2) html += `<div class="event-dot" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">+${evs.length-2} más</div>`;
+    html += `</div></div>`;
+  }
+  html += `</div></div>`;
+  document.getElementById('cal-view').innerHTML = html;
+}
+
+function renderList() {
+  document.getElementById('month-label').textContent = MONTHS[currentMonth] + ' 2026';
+  const month = currentMonth;
+  const daysInMonth = new Date(2026, month + 1, 0).getDate();
+  let html = `<div style="padding:0.75rem 1rem">`;
+  let hasAny = false;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `2026-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const evs = getEventsForDay(dateStr);
+    const isHoliday = !!FERIADOS[dateStr];
+    const dow = new Date(2026, month, d).getDay();
+    const isWeekend = (dow === 0 || dow === 6);
+    if (!evs.length && !isHoliday) continue;
+    if (!evs.length) continue;
+    hasAny = true;
+    const dowLabel = DAYS_SHORT[dow];
+    const dateColor = (isWeekend || isHoliday) ? '#c0392b' : 'var(--color-text-secondary)';
+    html += `<div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start">
+      <div style="min-width:52px;font-size:12px;color:${dateColor};padding-top:3px;font-weight:${isHoliday?'700':'400'}">${dowLabel} ${d}/${month+1}${isHoliday?'*':''}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">`;
+    evs.forEach(e => {
+      const bold = (e.key==='exam'||e.key==='recup') ? '700' : '500';
+      html += `<span style="background:${e.bg};color:${e.text};font-size:11px;font-weight:${bold};padding:2px 8px;border-radius:4px">${e.label}</span>`;
+    });
+    html += `</div></div>`;
+  }
+  if (!hasAny) html += `<div style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:2rem 0">Sin clases este mes</div>`;
+  html += `</div>`;
+  document.getElementById('cal-view').innerHTML = html;
+}
+
+function openDay(dateStr, d) {
+  const evs = ALL_EVENTS[dateStr] || [];
+  const isHoliday = !!FERIADOS[dateStr];
+  if (!evs.length && !isHoliday) return;
+  const month = parseInt(dateStr.split('-')[1]) - 1;
+  const dow = DAYS_SHORT[new Date(dateStr).getDay()];
+  document.getElementById('modal-title').textContent = `${dow} ${d} de ${MONTHS[month]}`;
+  let body = '';
+  if (isHoliday) {
+    body += `<div class="modal-holiday">Feriado: ${FERIADOS[dateStr]}</div>`;
+  }
+  evs.forEach(e => {
+    const bold = (e.key==='exam'||e.key==='recup') ? 'font-weight:700' : '';
+    body += `<div class="modal-event" style="${bold}">
+      <div class="modal-dot" style="background:${e.bg}"></div>
+      <span>${e.label}</span>
+    </div>`;
+  });
+  if (body) {
+    document.getElementById('modal-body').innerHTML = body;
+    document.getElementById('modal').classList.add('open');
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function prevMonth() {
+  if (currentMonth > 2) { currentMonth--; renderView(); }
+}
+function nextMonth() {
+  if (currentMonth < 10) { currentMonth++; renderView(); }
+}
+
+function renderLegend() {
+  const extra = [
+    { bg:'#f0f0ee', text:'#c0392b', label:'Fin de semana / Feriado' },
+  ];
+  document.getElementById('legend').innerHTML = [
+    ...MATERIAS.map(m => `<div class="legend-item"><div class="legend-dot" style="background:${m.bg}"></div>${m.label}</div>`),
+    ...extra.map(m => `<div class="legend-item"><div class="legend-dot" style="background:${m.bg};border:0.5px solid #ccc"></div><span style="color:${m.text}">${m.label}</span></div>`)
+  ].join('');
+}
+
+renderFilters();
+renderLegend();
+renderMonth();
+</script>
