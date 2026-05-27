@@ -1,5 +1,6 @@
 
-<style>
+<!-- saved from url=(0073)file:///C:/Users/Administrador/Downloads/calendario_guardavidas_2026.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: var(--font-sans, sans-serif); }
   .header { padding: 1rem 1rem 0.5rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
@@ -47,27 +48,88 @@
   .modal-holiday { font-size: 12px; color: #c0392b; margin-bottom: 8px; font-weight: 500; }
 </style>
 
-<div class="header">
+</head><body><div class="header">
   <div class="title">Carrera de Guardavidas 2026 — Campo Deportivo Dante Alighieri</div>
   <div class="subtitle">Inicio ciclo lectivo: 16/03/2026 · Psicología, Legales y Prehospitalaria son virtuales (examen presencial)</div>
   <div class="nav">
-    <button class="nav-btn active" onclick="setView('month', this)">Mes</button>
-    <button class="nav-btn" onclick="setView('list', this)">Lista</button>
+    <button class="nav-btn active" onclick="setView(&#39;month&#39;, this)">Mes</button>
+    <button class="nav-btn" onclick="setView(&#39;list&#39;, this)">Lista</button>
     <div class="month-nav">
-      <button class="nav-btn" onclick="prevMonth()">&#8592;</button>
-      <span class="month-label" id="month-label"></span>
-      <button class="nav-btn" onclick="nextMonth()">&#8594;</button>
+      <button class="nav-btn" onclick="prevMonth()">←</button>
+      <span class="month-label" id="month-label">Marzo 2026</span>
+      <button class="nav-btn" onclick="nextMonth()">→</button>
     </div>
   </div>
 </div>
 
-<div class="filters" id="filters"></div>
-<div id="cal-view"></div>
-<div class="legend" id="legend"></div>
+<div class="filters" id="filters">
+    <span class="chip active" style="background:#1565C0;color:#ffffff;border-color:#1565C0" onclick="toggleFilter(&#39;nat&#39;)">Natación</span>
+  
+    <span class="chip active" style="background:#9FE1CB;color:#085041;border-color:#9FE1CB" onclick="toggleFilter(&#39;fis&#39;)">Físico</span>
+  
+    <span class="chip active" style="background:#F48FB1;color:#880E4F;border-color:#F48FB1" onclick="toggleFilter(&#39;psi&#39;)">Psicología</span>
+  
+    <span class="chip active" style="background:#E6C84A;color:#5a3e00;border-color:#E6C84A" onclick="toggleFilter(&#39;leg&#39;)">Legales</span>
+  
+    <span class="chip active" style="background:#F5C4B3;color:#712B13;border-color:#F5C4B3" onclick="toggleFilter(&#39;sal&#39;)">Salvamento</span>
+  
+    <span class="chip active" style="background:#C0DD97;color:#27500A;border-color:#C0DD97" onclick="toggleFilter(&#39;pre&#39;)">Pre Hospitalaria</span>
+  
+    <span class="chip active" style="background:#CECBF6;color:#26215C;border-color:#CECBF6" onclick="toggleFilter(&#39;sal2&#39;)">Salidas</span>
+  
+    <span class="chip active" style="background:#FFD600;color:#5a4000;border-color:#FFD600" onclick="toggleFilter(&#39;exam&#39;)">Exámenes</span>
+  
+    <span class="chip active" style="background:#E24B4A;color:#ffffff;border-color:#E24B4A" onclick="toggleFilter(&#39;recup&#39;)">Recuperatorios</span>
+  </div>
+<div id="cal-view"><div class="calendar-grid">
+    <div class="day-headers"><div class="day-header weekend">Dom</div><div class="day-header">Lun</div><div class="day-header">Mar</div><div class="day-header">Mié</div><div class="day-header">Jue</div><div class="day-header">Vie</div><div class="day-header weekend">Sáb</div></div>
+    <div class="days-grid"><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-01&#39;, 1)">
+      <div class="day-num weekend-num">1</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-02&#39;, 2)">
+      <div class="day-num">2</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-03&#39;, 3)">
+      <div class="day-num">3</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-04&#39;, 4)">
+      <div class="day-num">4</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-05&#39;, 5)">
+      <div class="day-num">5</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-06&#39;, 6)">
+      <div class="day-num">6</div><div class="events"></div></div><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-07&#39;, 7)">
+      <div class="day-num weekend-num">7</div><div class="events"></div></div><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-08&#39;, 8)">
+      <div class="day-num weekend-num">8</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-09&#39;, 9)">
+      <div class="day-num">9</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-10&#39;, 10)">
+      <div class="day-num">10</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-11&#39;, 11)">
+      <div class="day-num">11</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-12&#39;, 12)">
+      <div class="day-num">12</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-13&#39;, 13)">
+      <div class="day-num">13</div><div class="events"></div></div><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-14&#39;, 14)">
+      <div class="day-num weekend-num">14</div><div class="events"></div></div><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-15&#39;, 15)">
+      <div class="day-num weekend-num">15</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-16&#39;, 16)">
+      <div class="day-num">16</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-17&#39;, 17)">
+      <div class="day-num">17</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-18&#39;, 18)">
+      <div class="day-num">18</div><div class="events"><div class="event-dot" style="background:#1565C0;color:#ffffff;">Natación</div></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-19&#39;, 19)">
+      <div class="day-num">19</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-20&#39;, 20)">
+      <div class="day-num">20</div><div class="events"><div class="event-dot" style="background:#F5C4B3;color:#712B13;">Salvamento</div></div></div><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-21&#39;, 21)">
+      <div class="day-num weekend-num">21</div><div class="events"></div></div><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-22&#39;, 22)">
+      <div class="day-num weekend-num">22</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-23&#39;, 23)">
+      <div class="day-num holiday-num">23</div><div class="holiday-label">Puente turístico</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-24&#39;, 24)">
+      <div class="day-num holiday-num">24</div><div class="holiday-label">Día de la Memoria</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-25&#39;, 25)">
+      <div class="day-num">25</div><div class="events"><div class="event-dot" style="background:#1565C0;color:#ffffff;">Natación</div></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-26&#39;, 26)">
+      <div class="day-num">26</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-27&#39;, 27)">
+      <div class="day-num">27</div><div class="events"><div class="event-dot" style="background:#F5C4B3;color:#712B13;">Salvamento</div></div></div><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-28&#39;, 28)">
+      <div class="day-num weekend-num">28</div><div class="events"></div></div><div class="day-cell weekend-cell" onclick="openDay(&#39;2026-03-29&#39;, 29)">
+      <div class="day-num weekend-num">29</div><div class="events"></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-30&#39;, 30)">
+      <div class="day-num">30</div><div class="events"><div class="event-dot" style="background:#1565C0;color:#ffffff;">Natación</div><div class="event-dot" style="background:#9FE1CB;color:#085041;">Físico</div></div></div><div class="day-cell" onclick="openDay(&#39;2026-03-31&#39;, 31)">
+      <div class="day-num">31</div><div class="events"></div></div></div></div></div>
+<div class="legend" id="legend"><div class="legend-item"><div class="legend-dot" style="background:#1565C0"></div>Natación</div><div class="legend-item"><div class="legend-dot" style="background:#9FE1CB"></div>Físico</div><div class="legend-item"><div class="legend-dot" style="background:#F48FB1"></div>Psicología</div><div class="legend-item"><div class="legend-dot" style="background:#E6C84A"></div>Legales</div><div class="legend-item"><div class="legend-dot" style="background:#F5C4B3"></div>Salvamento</div><div class="legend-item"><div class="legend-dot" style="background:#C0DD97"></div>Pre Hospitalaria</div><div class="legend-item"><div class="legend-dot" style="background:#CECBF6"></div>Salidas</div><div class="legend-item"><div class="legend-dot" style="background:#FFD600"></div>Exámenes</div><div class="legend-item"><div class="legend-dot" style="background:#E24B4A"></div>Recuperatorios</div><div class="legend-item"><div class="legend-dot" style="background:#f0f0ee;border:0.5px solid #ccc"></div><span style="color:#c0392b">Fin de semana / Feriado</span></div></div>
+<div style="padding: 0.5rem 1rem 1rem; font-size: 11px; color: var(--color-text-secondary); border-top: 0.5px solid var(--color-border-tertiary); line-height: 1.5;">
+  <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: #F48FB1;"></span>
+    <strong style="color: var(--color-text-primary);">Psicología:</strong> recuperatorio a definir (fecha pendiente)
+  </div>
+  <div style="display: flex; align-items: center; gap: 6px;">
+    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: #E6C84A;"></span>
+    <strong style="color: var(--color-text-primary);">Legales:</strong> recuperatorio a definir (fecha pendiente)
+  </div>
+</div>
 
 <div class="modal" id="modal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <button class="modal-close" onclick="closeModal()">✕</button>
     <div class="modal-title" id="modal-title"></div>
     <div id="modal-body"></div>
   </div>
@@ -107,24 +169,22 @@ const SCHEDULE = {
   3:  { nat:[18,25,30], fis:[30], sal:[20,27] },
   4:  { nat:[1,8,15,20,22,29], fis:[20], psi:[7,9,14,16,21,23,28,30], leg:[7,9,14,16,28,30], sal:[6,10,17,24] },
   5:  { nat:[6,13,18,20,27], fis:[18], psi:[5,7,12,14,19,21,26,28], leg:[5,7,12,14,19,21], sal:[4,8,15,22,29] },
-  6:  { nat:[3,8,10,17,24], fis:[8], leg:[4,11,18], sal:[5,12,19], pre:[2,9,16,23,25,30] },
-  7:  { nat:[1,22,27,29], fis:[27], leg:[3], sal:[24,31], pre:[2,7,28] },
-  8:  { nat:[5,10,12,19,24,26], fis:[10,24], sal:[7,14,21,28], pre:[4,11,18,25] },
-  9:  { nat:[2,7,9,14,16,23,30], fis:[7,14], sal:[4,18,25], pre:[1,8,15,22,29] },
-  10: { nat:[5,7,14,19,21,28], fis:[5], sal:[2,9,16,23,30], pre:[6,13,20,27] },
-  11: { nat:[2,4,11,16], fis:[2], sal:[13], pre:[3,10] },
+  6:  { nat:[3,8,10,17,24], fis:[8], leg:[2,9,16], sal:[5,12,19], pre:[4,11,18,25] },
+  7:  { nat:[1,22,27,29], fis:[27], leg:[3], sal:[24,31], pre:[2,9,30] },
+  8:  { nat:[5,10,12,19,24,26], fis:[10,24], sal:[7,14,21,28], pre:[6,13,20,27] },
+  9:  { nat:[2,7,9,14,16,23,30], fis:[7,14], sal:[4,18,25], pre:[3,10,17,24] },
+  10: { nat:[5,7,14,19,21,28], fis:[5], sal:[2,9,16,23,30], pre:[1,8,15,22,29] },
+  11: { nat:[2,4,11,16], fis:[2], sal:[13], pre:[5,12] },
 };
 
 const EXAMS_DATA = [
   { date:'2026-06-24', type:'exam',  label:'1° Examen Natación' },
   { date:'2026-07-01', type:'exam',  label:'1° Examen Natación' },
-  { date:'2026-05-26', type:'exam',  label:'1° Examen Psicología' },
-  { date:'2026-06-04', type:'exam',  label:'1° Examen Legales' },
+  { date:'2026-05-28', type:'exam',  label:'1° Examen Psicología' },
+  { date:'2026-06-18', type:'exam',  label:'1° Examen Legales' },
   { date:'2026-06-19', type:'exam',  label:'1° Examen Salvamento' },
   { date:'2026-07-07', type:'exam',  label:'1° Examen Pre Hosp.' },
   { date:'2026-07-22', type:'recup', label:'Recup. Natación' },
-  { date:'2026-05-28', type:'recup', label:'Recup. Psicología' },
-  { date:'2026-06-18', type:'recup', label:'Recup. Legales' },
   { date:'2026-06-26', type:'recup', label:'Recup. Salvamento' },
   { date:'2026-07-21', type:'recup', label:'Recup. Pre Hosp.' },
   { date:'2026-10-19', type:'exam',  label:'2° Examen Natación' },
@@ -351,3 +411,4 @@ renderFilters();
 renderLegend();
 renderMonth();
 </script>
+</body></html>
